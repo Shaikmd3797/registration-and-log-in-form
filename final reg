@@ -1,0 +1,117 @@
+def registration():
+  global user_id
+  user_id=input("Register your email id : ")
+  userId_pattern="^[a-zA-Z][\w.-]*[@][a-z 0-9]+[.][a-z][\w]{1,3}$"
+  db=open('user_id_details.txt','r')
+  details()
+  if user_id not in email:
+    if re.search(userId_pattern,user_id):
+      password()
+    else:
+      print("enter correct email id")
+      registration()
+  else:
+    print("user_id is already exit. log in through that email id")
+    db.close()
+    login()
+
+
+
+def password():
+  global pwd
+  pwd=input("Enter your password : ")
+  pwd_pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&]{5,16}$"
+  if re.search(pwd_pattern,pwd):
+    confirm_password()
+  else:
+    print("password is not satisfied all requirements.please enter correct password")
+    password()
+
+
+
+def confirm_password():
+  confirm_pwd=input("Enter same password : ")
+  if pwd==confirm_pwd:
+    db=open('user_id_details.txt','a')
+    db.writelines(user_id+", "+pwd+ "\n")
+    print(" registration is successfully")
+    
+    db.close()
+  else:
+    print("password is not match enter same password")
+    password()
+
+
+def login():
+  global data
+  user_id=input ("Enter your email id : ")
+  choose_one= input("Choose Enter password or forgot password : pwd | forgot ")
+  if choose_one=="pwd":
+    pwd= input("Enter your password : ")
+    db=open('user_id_details.txt','r')
+    details()
+    try:
+      if data[user_id]:
+        if pwd==data[user_id]:
+          print("log in successfully")
+          print("Hi ", user_id)
+          db.close()
+        else:
+          print("enter correct password")
+          login()
+      else:
+        print("user id does not exist")
+    except:
+      print("user id does not exist")
+      registration()
+    
+  elif choose_one=="forgot":
+    forgot_pwd()
+  else:
+    print("choose any of the one")
+    login()
+
+def forgot_pwd():
+  user_id=input("Enter your email id : ")
+  try:
+      if data[user_id]:
+        db=open('user_id_details.txt','r')
+        details()
+        print("the password is ",data[user_id])
+        db.close()
+        login()
+      else:
+        print("user id does not exist")
+        registration()
+  except:
+    print("user id does not exist")
+    registration()
+
+def details():
+  global email
+  global PWD
+  global data
+  email=[]
+  PWD=[]
+  db=open('user_id_details.txt','r')
+  for i in db:
+    A,B=i.split(", ")
+    B=B.strip()
+    email.append(A)
+    PWD.append(B)
+    data = dict(zip(email,PWD))
+
+def start():
+  choose= input("Choose registration or  log in as reg | login  ")
+  if choose=="reg":
+    registration()
+  elif choose=="login":
+    login()
+  else:
+    print(" choose any one in reg | login")
+    start()
+
+
+db=open('user_id_details.txt','a')
+import re
+start()
